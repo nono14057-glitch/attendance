@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Attendance</title>
+</head>
+
+<body style="text-align:center; margin-top:50px; font-family:Arial;">
+
+  <h2>تسجيل الحضور والانصراف</h2>
+
+  <input id="code" type="password" placeholder="ادخل الكود" 
+  style="padding:10px; width:200px; font-size:16px;" />
+
+  <br><br>
+
+  <button onclick="sendData()" 
+  style="padding:10px 20px; font-size:16px;">
+    تسجيل
+  </button>
+
+  <p id="msg" style="margin-top:20px; font-weight:bold;"></p>
+
+  <script>
+    function sendData() {
+      const code = document.getElementById("code").value;
+
+      fetch("https://n8n.srv1468690.hstgr.cloud/webhook-test/attendance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ code: code })
+      })
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("msg").innerText = data;
+      })
+      .catch(err => {
+        document.getElementById("msg").innerText = "حصل خطأ ❌";
+      });
+    }
+  </script>
+
+</body>
+</html>
