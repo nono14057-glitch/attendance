@@ -1,46 +1,224 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>Attendance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الحضور والانصراف</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    }
+    h2 {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: #1a1a1a;
+    }
+    .info-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+    .info-box {
+      background: #f5f7fa;
+      border-radius: 10px;
+      padding: 10px 14px;
+    }
+    .info-box span {
+      font-size: 11px;
+      color: #888;
+      display: block;
+      margin-bottom: 3px;
+    }
+    .info-box strong {
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+    }
+    .field { margin-bottom: 1.25rem; }
+    .field label {
+      font-size: 13px;
+      color: #555;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .code-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .code-wrap input {
+      width: 100%;
+      padding: 10px 42px 10px 12px;
+      font-size: 16px;
+      border: 1.5px solid #ddd;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .code-wrap input:focus { border-color: #4a6cf7; }
+    .toggle-btn {
+      position: absolute;
+      left: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: #888;
+      line-height: 1;
+      padding: 0;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      background: #4a6cf7;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .submit-btn:hover { background: #3a5ce6; }
+    .submit-btn:active { transform: scale(0.98); }
+    #msg {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      min-height: 20px;
+    }
+    .success { color: #16a34a; }
+    .error { color: #dc2626; }
+    .pending { color: #888; }
+  </style>
 </head>
+<body>
+  <div class="card">
+    <h2>تسجيل الحضور والانصراف</h2>
 
-<body style="text-align:center; margin-top:50px; font-family:Arial;">
+    <div class="info-row">
+      <div class="info-box">
+        <span>التاريخ</span>
+        <strong id="disp-date">--</strong>
+      </div>
+      <div class="info-box">
+        <span>الوقت</span>
+        <strong id="disp-time">--</strong>
+      </div>
+    </div>
 
-  <h2>تسجيل الحضور والانصراف</h2>
+    <div class="field">
+      <label>الكود</label>
+      <div class="code-wrap">
+        <input id="code" type="tel" placeholder="ادخل الكود" autocomplete="one-time-code" />
+        <button class="toggle-btn" onclick="toggleVis()" id="eye-btn" title="إظهار/إخفاء">&#128065;</button>
+      </div>
+    </div>
 
-  <input id="code" type="password" placeholder="ادخل الكود" 
-  style="padding:10px; width:200px; font-size:16px;" />
-
-  <br><br>
-
-  <button onclick="sendData()" 
-  style="padding:10px 20px; font-size:16px;">
-    تسجيل
-  </button>
-
-  <p id="msg" style="margin-top:20px; font-weight:bold;"></p>
+    <button class="submit-btn" onclick="sendData()">تسجيل</button>
+    <p id="msg"></p>
+  </div>
 
   <script>
-    function sendData() {
-      const code = document.getElementById("code").value;
+    // ============================================================
+    // استرجاع آخر كود محفوظ
+    // ============================================================
+    const codeInput = document.getElementById("code");
+    const saved = localStorage.getItem("last_att_code");
+    if (saved) codeInput.value = saved;
 
-      fetch("https://n8n.srv1468690.hstgr.cloud/webhook-test/94a8d72c-5fc0-47b1-bca1-9c185f243279", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ code: code })
-      })
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById("msg").innerText = data;
-      })
-      .catch(err => {
-        document.getElementById("msg").innerText = "حصل خطأ ❌";
-      });
+    // ============================================================
+    // ساعة تتحدث كل ثانية
+    // ============================================================
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function updateClock() {
+      const now = new Date();
+      const days    = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+      const months  = ['يناير','فبراير','مارس','أبريل','مايو','يونيو',
+                        'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+      document.getElementById("disp-date").textContent =
+        days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+      let h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+      const ampm = h >= 12 ? 'م' : 'ص';
+      h = h % 12 || 12;
+      document.getElementById("disp-time").textContent =
+        pad(h) + ':' + pad(m) + ':' + pad(s) + ' ' + ampm;
     }
-  </script>
+    updateClock();
+    setInterval(updateClock, 1000);
 
+    // ============================================================
+    // إظهار / إخفاء الكود
+    // ============================================================
+    let visible = false;
+    function toggleVis() {
+      visible = !visible;
+      codeInput.type = visible ? 'text' : 'tel';
+      document.getElementById("eye-btn").innerHTML = visible ? '&#128064;' : '&#128065;';
+    }
+
+    // ============================================================
+    // إرسال البيانات
+    // ============================================================
+    function sendData() {
+      const code = codeInput.value.trim();
+      if (!code) { setMsg("من فضلك ادخل الكود", false); return; }
+
+      const now      = new Date();
+      const dateStr  = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+      const timeStr  = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+
+      localStorage.setItem("last_att_code", code);
+      setMsg("جاري الإرسال...", null);
+
+      fetch("https://n8n.srv1468690.hstgr.cloud/webhook/attendance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code:     code,
+          date:     dateStr,
+          time:     timeStr,
+          datetime: dateStr + 'T' + timeStr
+        })
+      })
+      .then(r => r.text())
+      .then(d => setMsg(d || "تم التسجيل بنجاح ✓", true))
+      .catch(() => setMsg("حصل خطأ في الاتصال ✗", false));
+    }
+
+    // ============================================================
+    // عرض الرسائل
+    // ============================================================
+    function setMsg(text, ok) {
+      const el = document.getElementById("msg");
+      el.textContent = text;
+      el.className = ok === true ? 'success' : ok === false ? 'error' : 'pending';
+    }
+
+    // إرسال بالضغط على Enter
+    codeInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") sendData();
+    });
+  </script>
 </body>
 </html>
