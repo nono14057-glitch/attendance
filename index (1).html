@@ -23,104 +23,53 @@
       max-width: 420px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
-    .logo-wrap {
-      text-align: center;
-      margin-bottom: 1.25rem;
-    }
-    .logo-wrap img {
-      width: 200px;
-      max-width: 100%;
-      height: auto;
-    }
-    .divider {
-      border: none;
-      border-top: 1.5px solid #e0eaf4;
-      margin-bottom: 1.25rem;
-    }
-    h2 {
-      text-align: center;
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 1.25rem;
-      color: #1a4a7a;
-    }
-    .info-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 1.25rem;
-    }
-    .info-box {
+    .logo-wrap { text-align: center; margin-bottom: 1.25rem; }
+    .logo-wrap img { width: 200px; max-width: 100%; height: auto; }
+    .divider { border: none; border-top: 1.5px solid #e0eaf4; margin-bottom: 1.25rem; }
+    h2 { text-align: center; font-size: 18px; font-weight: 600; margin-bottom: 1.25rem; color: #1a4a7a; }
+    .info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+    .info-box { background: #f0f6fc; border-radius: 10px; padding: 10px 14px; }
+    .info-box span { font-size: 11px; color: #888; display: block; margin-bottom: 3px; }
+    .info-box strong { font-size: 14px; font-weight: 600; color: #1a4a7a; }
+    .branch-box {
       background: #f0f6fc;
       border-radius: 10px;
       padding: 10px 14px;
-    }
-    .info-box span {
-      font-size: 11px;
-      color: #888;
-      display: block;
-      margin-bottom: 3px;
-    }
-    .info-box strong {
-      font-size: 14px;
-      font-weight: 600;
-      color: #1a4a7a;
-    }
-    .field { margin-bottom: 1.25rem; }
-    .field label {
-      font-size: 13px;
-      color: #555;
-      display: block;
-      margin-bottom: 6px;
-    }
-    .code-wrap {
-      position: relative;
+      margin-bottom: 1.25rem;
       display: flex;
       align-items: center;
+      gap: 8px;
     }
+    .branch-box span { font-size: 11px; color: #888; display: block; margin-bottom: 2px; }
+    .branch-box strong { font-size: 14px; font-weight: 600; color: #1a4a7a; }
+    .branch-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #ccc; flex-shrink: 0; margin-top: 2px;
+    }
+    .branch-dot.found { background: #16a34a; }
+    .branch-dot.notfound { background: #dc2626; }
+    .field { margin-bottom: 1.25rem; }
+    .field label { font-size: 13px; color: #555; display: block; margin-bottom: 6px; }
+    .code-wrap { position: relative; display: flex; align-items: center; }
     .code-wrap input {
-      width: 100%;
-      padding: 10px 42px 10px 12px;
-      font-size: 16px;
-      border: 1.5px solid #c0d8ef;
-      border-radius: 10px;
-      outline: none;
-      transition: border-color 0.2s;
-      background: #f8fbff;
+      width: 100%; padding: 10px 42px 10px 12px; font-size: 16px;
+      border: 1.5px solid #c0d8ef; border-radius: 10px; outline: none;
+      transition: border-color 0.2s; background: #f8fbff;
     }
     .code-wrap input:focus { border-color: #1a6abf; }
     .toggle-btn {
-      position: absolute;
-      left: 10px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 18px;
-      color: #888;
-      line-height: 1;
-      padding: 0;
+      position: absolute; left: 10px; background: none; border: none;
+      cursor: pointer; font-size: 18px; color: #888; line-height: 1; padding: 0;
     }
     .submit-btn {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      background: #1a6abf;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.2s;
+      width: 100%; padding: 12px; font-size: 16px; font-weight: 600;
+      background: #1a6abf; color: #fff; border: none; border-radius: 10px;
+      cursor: pointer; transition: background 0.2s;
     }
     .submit-btn:hover { background: #155a9e; }
-    .submit-btn:active { transform: scale(0.98); }
-    #msg {
-      margin-top: 1rem;
-      text-align: center;
-      font-size: 14px;
-      font-weight: 600;
-      min-height: 20px;
-    }
+    .submit-btn:disabled { background: #a0b8d0; cursor: not-allowed; }
+    .submit-btn:active:not(:disabled) { transform: scale(0.98); }
+    #msg { margin-top: 1rem; text-align: center; font-size: 14px; font-weight: 600; min-height: 20px; }
     .success { color: #16a34a; }
     .error   { color: #dc2626; }
     .pending { color: #888; }
@@ -145,19 +94,90 @@
       </div>
     </div>
 
+    <div class="branch-box">
+      <div class="branch-dot" id="branch-dot"></div>
+      <div>
+        <span>الفرع</span>
+        <strong id="disp-branch">جاري تحديد الموقع...</strong>
+      </div>
+    </div>
+
     <div class="field">
       <label>الكود</label>
       <div class="code-wrap">
         <input id="code" type="tel" placeholder="ادخل الكود" autocomplete="one-time-code" />
-        <button class="toggle-btn" onclick="toggleVis()" id="eye-btn" title="إظهار/إخفاء">&#128065;</button>
+        <button class="toggle-btn" onclick="toggleVis()" id="eye-btn">&#128065;</button>
       </div>
     </div>
 
-    <button class="submit-btn" onclick="sendData()">تسجيل</button>
+    <button class="submit-btn" id="submit-btn" onclick="sendData()" disabled>تسجيل</button>
     <p id="msg"></p>
   </div>
 
   <script>
+    // ============================================================
+    // إحداثيات الفروع — عدّليها بالأرقام الحقيقية
+    // ============================================================
+    const BRANCHES = [
+      { name: "الماظة",  lat: 30.083572234771616,  lng: 31.34435196729229, radius: 300 },
+      { name: "المعادي", lat: 29.970680369158874,  lng: 31.27395256589353, radius: 300 }
+    ];
+    // radius = نصف القطر بالمتر (200 = 200 متر حواليك)
+
+    // ============================================================
+    let userLat = null, userLng = null, userBranch = null;
+
+    function calcDistance(lat1, lng1, lat2, lng2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 +
+                Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    function detectBranch(lat, lng) {
+      for (const b of BRANCHES) {
+        const dist = calcDistance(lat, lng, b.lat, b.lng);
+        if (dist <= b.radius) return b.name;
+      }
+      return null;
+    }
+
+    function initGPS() {
+      if (!navigator.geolocation) {
+        setBranchUI(null, "الموقع غير مدعوم في هذا الجهاز");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userLat = pos.coords.latitude;
+          userLng = pos.coords.longitude;
+          userBranch = detectBranch(userLat, userLng);
+          if (userBranch) {
+            setBranchUI(true, userBranch);
+            document.getElementById("submit-btn").disabled = false;
+          } else {
+            setBranchUI(false, "أنت خارج نطاق الفروع");
+            document.getElementById("submit-btn").disabled = true;
+          }
+        },
+        (err) => {
+          let msg = "تعذر تحديد الموقع";
+          if (err.code === 1) msg = "يرجى السماح بالوصول للموقع";
+          setBranchUI(false, msg);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+
+    function setBranchUI(found, text) {
+      document.getElementById("disp-branch").textContent = text;
+      const dot = document.getElementById("branch-dot");
+      dot.className = "branch-dot" + (found === true ? " found" : found === false ? " notfound" : "");
+    }
+
+    // ============================================================
     const codeInput = document.getElementById("code");
     const saved = localStorage.getItem("last_att_code");
     if (saved) codeInput.value = saved;
@@ -166,7 +186,7 @@
 
     function updateClock(){
       const now = new Date();
-      const days   = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+      const days   = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','','السبت'];
       const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
       document.getElementById("disp-date").textContent =
         days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
@@ -188,6 +208,7 @@
     function sendData(){
       const code = codeInput.value.trim();
       if(!code){ setMsg("من فضلك ادخل الكود", false); return; }
+      if(!userBranch){ setMsg("لم يتم تحديد الفرع بعد", false); return; }
       const now     = new Date();
       const dateStr = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
       const timeStr = pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
@@ -196,7 +217,15 @@
       fetch("https://n8n.srv1468690.hstgr.cloud/webhook-test/94a8d72c-5fc0-47b1-bca1-9c185f243279", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, date: dateStr, time: timeStr, datetime: dateStr+'T'+timeStr })
+        body: JSON.stringify({
+          code,
+          date:     dateStr,
+          time:     timeStr,
+          datetime: dateStr + 'T' + timeStr,
+          branch:   userBranch,
+          lat:      userLat,
+          lng:      userLng
+        })
       })
       .then(r => r.text())
       .then(d => setMsg(d || "تم التسجيل بنجاح ✓", true))
@@ -209,9 +238,10 @@
       el.className = ok === true ? 'success' : ok === false ? 'error' : 'pending';
     }
 
-    codeInput.addEventListener("keydown", function(e){
-      if(e.key === "Enter") sendData();
-    });
+    codeInput.addEventListener("keydown", e => { if(e.key === "Enter") sendData(); });
+
+    // ابدأ تحديد الموقع فور فتح الصفحة
+    initGPS();
   </script>
 </body>
 </html>
