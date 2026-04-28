@@ -119,9 +119,9 @@
     // إحداثيات الفروع — عدّليها بالأرقام الحقيقية
     // ============================================================
     const BRANCHES = [
-      { name: "الفرع الأول",  lat: 30.0444,  lng: 31.2357, radius: 200 },
-      { name: "الفرع الثاني", lat: 30.0600,  lng: 31.2500, radius: 200 },
-      { name: "الفرع الثالث", lat: 30.0000,  lng: 31.0000, radius: 200 }
+      { name: "الماظة",  lat: 30.083572234771616,  lng: 31.34435196729229, radius: 300 },
+      { name: "المعادي", lat: 29.970680369158874,  lng: 31.27395256589353, radius: 300 },
+      { name: "اسيوط", lat: 27.17909717187446,  lng: 31.18638086318631, radius: 300 }
     ];
     // radius = نصف القطر بالمتر (200 = 200 متر حواليك)
 
@@ -215,7 +215,7 @@
       const timeStr = pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
       localStorage.setItem("last_att_code", code);
       setMsg("جاري الإرسال...", null);
-      fetch("https://n8n.srv1468690.hstgr.cloud/webhook/attendance", {
+      fetch("https://n8n.srv1468690.hstgr.cloud/webhook-test/attendance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
